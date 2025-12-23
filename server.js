@@ -228,16 +228,19 @@ app.get('/view-log', (req, res) => {
   }
 });
 
-// [VULNERABILITY] IDOR - Insecure Direct Object Reference
+// [FIXEDD] IDOR - Insecure Direct Object Reference
 app.get('/profile', (req, res) => {
   if (!req.cookies.userId) {
     res.redirect('/login');
     return;
   }
 
-  const profileId = req.query.id || req.cookies.userId;
-
-  // [VULNERABILITY] IDOR - no authorization check to verify if the logged-in user
+  // FIX IS TO ONLY ALLOW ACCESS TO OWN PROFILE
+  let profileId = req.query.id || req.cookies.userId;
+  if (profileId != req.cookies.userId) {
+    return res.send('Access denied: You can only view your own profile.');
+  }
+  // [FIXEDD] IDOR - no authorization check to verify if the logged-in user
   // should be allowed to view this profile. Any user can view any profile by changing the ID.
   db.get(`SELECT * FROM users WHERE id = ?`, [profileId], (err, user) => {
     if (err || !user) {
