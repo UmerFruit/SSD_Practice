@@ -49,7 +49,7 @@
             <div class="task-content">
               <!-- [VULNERABILITY] Using unescaped output <%- %> instead of escaped <%= %>
                    This renders HTML/JavaScript directly, allowing XSS attacks -->
-              <%- task.content %>
+              <%= task.content %>
             </div>
             <div class="task-meta">
               Created: <%= task.created_at %>

@@ -73,11 +73,11 @@ app.post('/login', (req, res) => {
 
   // [VULNERABILITY] SQL Injection - using string concatenation to build SQL query
   // This allows attacks like: username = ' OR '1'='1 to bypass authentication
-  const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+  const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
   
   console.log('Executing query:', query); // For debugging
 
-  db.get(query, (err, user) => {
+  db.get(query,[username,password], (err, user) => {
     if (err) {
       console.error('Database error:', err);
       res.render('login', { error: 'Database error occurred' });
@@ -134,10 +134,12 @@ app.post('/add-task', (req, res) => {
   }
 
   const userId = req.cookies.userId;
-  const content = req.body.content;
+  let content = req.body.content;
 
-  // [VULNERABILITY] No sanitization of user input
-  // This allows XSS payloads like <script>alert('XSS')</script> to be stored
+  // Fix: Basic HTML escaping to prevent XSS
+  content = content.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  // <script>alert('XSS')</script> becomes &lt;script&gt;alert('XSS')&lt;/script&gt;
+  
   db.run(`INSERT INTO tasks (user_id, content) VALUES (?, ?)`, [userId, content], (err) => {
     if (err) {
       console.error('Error adding task:', err);
