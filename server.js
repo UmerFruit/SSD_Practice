@@ -126,7 +126,7 @@ app.get('/dashboard', (req, res) => {
   });
 });
 
-// [VULNERABILITY] Stored XSS - Add task without sanitization
+// [FIXEDD] Stored XSS - Add task without sanitization
 app.post('/add-task', (req, res) => {
   if (!req.cookies.userId) {
     res.redirect('/login');
@@ -138,7 +138,6 @@ app.post('/add-task', (req, res) => {
 
   // Fix: Basic HTML escaping to prevent XSS
   content = content.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  // <script>alert('XSS')</script> becomes &lt;script&gt;alert('XSS')&lt;/script&gt;
   
   db.run(`INSERT INTO tasks (user_id, content) VALUES (?, ?)`, [userId, content], (err) => {
     if (err) {
@@ -167,25 +166,34 @@ app.post('/ping', (req, res) => {
 
   const website = req.body.website;
 
-  // [VULNERABILITY] Command Injection - directly concatenating user input into shell command
-  // This allows attacks like: google.com; ls or google.com && cat /etc/passwd
-  const command = `ping -n 2 ${website}`;
-  
-  console.log('Executing command:', command); // For debugging
+  // Fix: Basic validation to prevent command injection
+  if (!/^[a-zA-Z0-9.-]+$/.test(website)) {
+    res.render('admin', { username: req.cookies.username, result: 'Invalid website format' });
+    return;
+  }
 
-  exec(command, (error, stdout, stderr) => {
-    let result = '';
-    if (error) {
-      result = `Error: ${error.message}\n${stdout}\n${stderr}`;
-    } else {
-      result = stdout || stderr;
+  // Fix: Use spawn instead of exec to avoid shell injection
+  const { spawn } = require('child_process');
+  const ping = spawn('ping', ['-n', '2', website]);
+
+  let result = '';
+  ping.stdout.on('data', (data) => {
+    result += data.toString();
+  });
+
+  ping.stderr.on('data', (data) => {
+    result += data.toString();
+  });
+
+  ping.on('close', (code) => {
+    if (code !== 0) {
+      result = `Error: Ping failed with code ${code}\n${result}`;
     }
-
     res.render('admin', { username: req.cookies.username, result });
   });
 });
 
-// [VULNERABILITY] Path Traversal - File viewer
+// [FIXEDD] Path Traversal - File viewer
 app.get('/view-log', (req, res) => {
   if (!req.cookies.userId) {
     res.redirect('/login');
@@ -194,9 +202,17 @@ app.get('/view-log', (req, res) => {
 
   const filename = req.query.file || 'app.log';
 
+  // Fix: Prevent path traversal by validating filename
+  if (filename.includes('..') || filename.includes('/') || filename.includes('\\') || !filename.endsWith('.log')) {
+    res.render('file-viewer', { 
+      username: req.cookies.username, 
+      filename, 
+      content: 'Access denied: Invalid filename' 
+    });
+    return;
+  }
+
   try {
-    // [VULNERABILITY] Path Traversal - no validation of file path
-    // This allows reading arbitrary files like ?file=../../package.json
     const content = fs.readFileSync(filename, 'utf8');
     res.render('file-viewer', { 
       username: req.cookies.username, 
