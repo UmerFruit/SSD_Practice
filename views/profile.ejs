@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile - Vulnerable Task Manager</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-content">
+      <h2>📝 Task Manager</h2>
+      <div class="nav-links">
+        <span>Welcome, <strong><%= username %></strong></span>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/admin">Admin</a>
+        <a href="/view-log">Logs</a>
+        <a href="/profile">Profile</a>
+        <a href="/logout">Logout</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>👤 User Profile</h1>
+    
+    <div class="profile-container">
+      <div class="profile-card">
+        <h2>Profile Details</h2>
+        <div class="profile-field">
+          <strong>User ID:</strong> <%= profile.id %>
+        </div>
+        <div class="profile-field">
+          <strong>Username:</strong> <%= profile.username %>
+        </div>
+        <div class="profile-field">
+          <strong>Email:</strong> <%= profile.email %>
+        </div>
+        <div class="profile-field">
+          <strong>Password:</strong> <%= profile.password %> 
+          <span class="danger-badge">⚠️ Plain Text!</span>
+        </div>
+      </div>
+
+      <div class="vulnerability-hint">
+        <strong>🚨 IDOR Vulnerability Test:</strong>
+        <p>You are logged in as user ID: <strong><%= currentUserId %></strong></p>
+        <p>Try accessing other user profiles:</p>
+        <ul>
+          <li><a href="/profile?id=1">View Profile ID 1 (admin)</a></li>
+          <li><a href="/profile?id=2">View Profile ID 2 (user)</a></li>
+          <li><a href="/profile?id=3">View Profile ID 3 (alice)</a></li>
+        </ul>
+        <p>Notice how you can view any user's profile, including their plain text password!</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

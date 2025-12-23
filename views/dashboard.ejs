@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Vulnerable Task Manager</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-content">
+      <h2>📝 Task Manager</h2>
+      <div class="nav-links">
+        <span>Welcome, <strong><%= username %></strong></span>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/admin">Admin</a>
+        <a href="/view-log">Logs</a>
+        <a href="/profile">Profile</a>
+        <a href="/logout">Logout</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>My Tasks</h1>
+    
+    <div class="task-form">
+      <h2>Add New Task</h2>
+      <form method="POST" action="/add-task">
+        <div class="form-group">
+          <label for="content">Task Content:</label>
+          <textarea id="content" name="content" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn">Add Task</button>
+      </form>
+      
+      <div class="vulnerability-hint">
+        <strong>🚨 XSS Vulnerability:</strong> Try adding: <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code>
+      </div>
+    </div>
+
+    <div class="tasks-list">
+      <h2>Your Tasks</h2>
+      <% if (tasks.length === 0) { %>
+        <p>No tasks yet. Add your first task above!</p>
+      <% } else { %>
+        <% tasks.forEach(task => { %>
+          <div class="task-item">
+            <div class="task-content">
+              <!-- [VULNERABILITY] Using unescaped output <%- %> instead of escaped <%= %>
+                   This renders HTML/JavaScript directly, allowing XSS attacks -->
+              <%- task.content %>
+            </div>
+            <div class="task-meta">
+              Created: <%= task.created_at %>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>

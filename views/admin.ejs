@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Vulnerable Task Manager</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-content">
+      <h2>📝 Task Manager</h2>
+      <div class="nav-links">
+        <span>Welcome, <strong><%= username %></strong></span>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/admin">Admin</a>
+        <a href="/view-log">Logs</a>
+        <a href="/profile">Profile</a>
+        <a href="/logout">Logout</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>🔧 Admin Panel - Server Health Check</h1>
+    
+    <div class="admin-panel">
+      <h2>Ping a Website</h2>
+      <form method="POST" action="/ping">
+        <div class="form-group">
+          <label for="website">Website to Ping:</label>
+          <input type="text" id="website" name="website" placeholder="google.com" required>
+        </div>
+        <button type="submit" class="btn">Ping</button>
+      </form>
+      
+      <div class="vulnerability-hint">
+        <strong>💉 Command Injection Test:</strong>
+        <ul>
+          <li>Try: <code>google.com & dir</code> (Windows)</li>
+          <li>Try: <code>google.com; ls</code> (Linux/Mac)</li>
+          <li>Try: <code>google.com && type server.js</code> (Windows - read server.js)</li>
+          <li>Try: <code>127.0.0.1 & whoami</code></li>
+        </ul>
+      </div>
+
+      <% if (result) { %>
+        <div class="result-box">
+          <h3>Result:</h3>
+          <pre><%= result %></pre>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>

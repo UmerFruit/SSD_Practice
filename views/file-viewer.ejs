@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Viewer - Vulnerable Task Manager</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-content">
+      <h2>📝 Task Manager</h2>
+      <div class="nav-links">
+        <span>Welcome, <strong><%= username %></strong></span>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/admin">Admin</a>
+        <a href="/view-log">Logs</a>
+        <a href="/profile">Profile</a>
+        <a href="/logout">Logout</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>📄 File Viewer</h1>
+    
+    <div class="file-viewer">
+      <h2>Viewing: <%= filename %></h2>
+      
+      <div class="vulnerability-hint">
+        <strong>🚨 Path Traversal Test:</strong>
+        <ul>
+          <li><a href="/view-log?file=app.log">app.log</a> (default)</li>
+          <li><a href="/view-log?file=package.json">package.json</a></li>
+          <li><a href="/view-log?file=server.js">server.js</a></li>
+          <li><a href="/view-log?file=..\..\..\..\Windows\System32\drivers\etc\hosts">../../../etc/hosts</a> (Path Traversal)</li>
+        </ul>
+      </div>
+
+      <div class="file-content">
+        <pre><%= content %></pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

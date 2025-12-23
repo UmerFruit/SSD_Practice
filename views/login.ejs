@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Vulnerable Task Manager</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="login-box">
+      <h1>🔓 Vulnerable Task Manager</h1>
+      <p class="warning">⚠️ Educational Version - Contains Security Vulnerabilities</p>
+      
+      <% if (error) { %>
+        <div class="error"><%= error %></div>
+      <% } %>
+
+      <form method="POST" action="/login">
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        
+        <button type="submit" class="btn">Login</button>
+      </form>
+
+      <div class="info-box">
+        <h3>Test Accounts:</h3>
+        <ul>
+          <li><strong>admin</strong> / admin123</li>
+          <li><strong>user</strong> / user123</li>
+          <li><strong>alice</strong> / password</li>
+        </ul>
+        
+        <h3>💉 SQL Injection Test:</h3>
+        <p>Try: <code>' OR '1'='1</code> as username</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
